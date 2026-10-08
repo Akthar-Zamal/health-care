@@ -1,101 +1,83 @@
-# 🏥 Healthcare Data Analytics Dashboard - Power BI
+# Healthcare Data Analytics Dashboard | Power BI
 
-> **Senior Data Analyst Case Study | End-to-End Project**
-> Raw Hospital Data → Cleaning → Star Schema → DAX → 2-Page Management Dashboard
+### 📌 Project Overview
+Built an end-to-end Healthcare Analytics dashboard for a multi-specialty hospital to track admissions, operations, billing, and patient experience. Raw data had duplicates, missing values, inconsistent text, and wrong date formats.
 
----
+This project covers full lifecycle: **Data Cleaning → Data Modeling → DAX → Dashboard → Insights.**
 
-## 📌 Problem Statement
-A multi-specialty hospital wants to understand **patient admissions, operations, billing, payment collection and patient experience**.
+### 🎯 Business Questions Solved
+- Monthly admission trends
+- Highest patient volume department
+- Avg Length of Stay & Waiting Time
+- Diagnosis contribution to billing
+- Total Billed / Collected / Outstanding & Collection Rate
+- Insurance performance (Best / Worst)
+- Factors for low satisfaction
+- Data Quality % & Duplicate handling
 
-But the raw data had:
-- Duplicates
-- Missing values (Insurance, Payment Mode, Status)
-- Inconsistent casing & extra spaces
-- Wrong date formats
-- Numbers stored as text
+### 🛠️ Tools Used
+- **Power BI Desktop** - Dashboard & Modeling
+- **Power Query** - Data Cleaning & Transformation
+- **DAX** - 17 KPI Measures
+- **Excel** - Source data
+- **Star Schema** - Data Modeling (1 Fact + 7 Dims)
 
-**Goal:** Clean, Validate, Transform and build a Management Dashboard.
-
----
-
-## ❓ Business Questions
-1. Monthly admission trends?
-2. Which department has highest patient volume?
-3. What is Avg Length of Stay & Waiting Time?
-4. How much does each diagnosis contribute to billing?
-5. What is Total Billed / Collected / Outstanding & Collection Rate?
-6. Which insurance performs best/worst?
-7. What factors cause low satisfaction?
-8. What is % data quality & duplicate count?
-9. Final Management Dashboard
-
----
-
-## 📂 Dataset
-- **Source:** `healthcare_dataset.xlsx`
-- **Rows:** 2000+ Admission Records
-- **Columns:** Patient_ID, Age, Gender, Department, Diagnosis, Doctor, Insurance, Ward, Bill_Amount_INR, Amount_Paid, Admission_Date, Discharge_Date, Stay_Days, Waiting_Time, Satisfaction_Scores, Payment_Mode, Status
-
----
-
-## 🧹 Data Cleaning (Power Query)
-- Removed Duplicates (based on Patient_ID + Admission_Date)
-- Trim, Clean, Proper Case for Department, Diagnosis, Insurance
-- Fixed Date Formats (DOB, Admission_Date)
-- Changed Bill_Amount from Text to Number (INR)
-- Created Columns: Age_Group, Year, Month, Quarter
-
-**Null Handling Strategy:**
-Replaced nulls in Admission Status, Payment Mode, DOB, Insurance Provider with **"Unknown"** because Mean/Median is not genuine for categorical data. This preserves audit trail.
+### 🧹 Data Cleaning Done
+- Removed duplicates, Trim & Clean, Fixed casing
+- Fixed date formats, Converted Bill Amount Text → Number
+- Replaced Nulls in Status, Payment Mode, Insurance, DOB with **"Unknown"** (Mean/Median not valid for categorical)
+- Created: Age_Group, Year, Month, Quarter
 
 **Data Quality Issues Found:**
-- Unknown Payment Mode: **116**
-- Unknown Status: **325**
-- Unknown Insurance Provider: **454 (Critical)**
-- % Complete Records: **60%**
-- Data Quality Score: **0.53 / 1.0**
+- Unknown Payment: 116 | Unknown Status: 325 | Unknown Insurance: 454
+- % Complete Records: 60% | Data Quality Score: 0.53
+
+### 🏗️ Data Model - Star Schema
+**Fact:** Fact_Admission (Bill_Amount, Amount_Paid, Admission_Date, Stay_Days, Waiting_Time, Satisfaction)
+**Dimensions (7):** Dim_Patient, Dim_Department, Dim_Diagnosis, Dim_Doctor, Dim_Insurance, Dim_Ward, Dim_Payment
+**Relationship:** 1-to-Many
+
+### 📊 KPIs Created (DAX)
+- Total Admissions = 2K | Total Billed = 243.85M | Collected = 196.78M | Outstanding = 47.07M
+- Collection Rate = 80.7% | Avg Stay = 9.50 Days | Avg Waiting = 121.85 mins | Avg Satisfaction = 3.55
+- Best Insurance = ICICI Lombard | Worst = Medicare | Top Diagnosis Billing = 21.89M
+
+### 📈 Dashboard - 2 Pages
+
+**Page 1: OVERVIEW (For Management)**
+- 8 KPI Cards
+- Gender Donut: 977 Male (49%) vs 980 Female (50%)
+- Dept Bar: General Medicine 315 (Top), Emergency 312, Cardiology 297
+- Insurance Table: Unknown Insurance 5.56M Highest Risk
+- Line Chart: Admissions by Month - Declining trend
+- Billed by Year: ~80M stable
+
+**Page 2: ANALYSIS (For Data Quality)**
+- Age Group Donut: Adult 32.93% (650) Highest
+- Funnel: Billed vs Collected vs Outstanding - 19.3% pending
+- Treemap: Billed by Dept - Emergency 39.48M Highest
+- Donut: Billed by Diagnosis - Cancer & Heart Disease top
+- Filters: Year, Ward, Quarter
+
+### 🔍 Key Insights
+
+1. **Revenue Issue:** Only 80.7% collected, 47.07M outstanding (19.3% pending) - collection weak
+2. **Insurance Risk:** ICICI Lombard best payer, Medicare worst - 454 unknown insurance = 5.56M leakage
+3. **Data Quality:** Only 53% quality score - major data entry gaps
+4. **Operational Load:** General Medicine & Emergency handle 31% admissions - over-utilized
+5. **Patient Experience:** Avg waiting 121 mins very high → Satisfaction low 3.55/5
+6. **Business Trend:** Monthly admissions declining, Yearly billing flat at 80M - no growth
+
+### ✅ Recommendations
+
+1. **Revenue:** Dedicated team for 47M outstanding, fix 454 unknown insurance, renegotiate Medicare, promote ICICI Lombard
+2. **Operations:** Make Insurance/Payment mandatory fields, add staff to Emergency & General Medicine, reduce waiting to <60 mins
+3. **Management:** Monthly data quality audit (target 0.90), marketing for declining admissions, focus on high-billing packages (Heart/Cancer)
+4. **IT:** Implement RLS for doctors, auto-email for >30 days outstanding
+
+### 📂 Files in Repo
+- `Healthcare_Dashboard.pbix`
+- `healthcare_dataset.xlsx`
 
 ---
-
-## 🏗️ Data Model - Star Schema
-
-**Fact Table:** `Fact_Admission`
-> Patient_ID, Bill_Amount_INR, Amount_Paid, Admission_Date, Stay_Days, Waiting_Time, Satisfaction_Scores, Month, Ward, Payment Mode
-
-**Dimensions (7) - All 1-to-Many to Fact:**
-- `Dim_Patient` - Age, Age_Group, Gender, Patient_ID, Name
-- `Dim_Department` - Department_ID, Department_Name
-- `Dim_Diagnosis` - Diagnosis_ID, Diagnosis_Name, Cost
-- `Dim_Doctor` - Doctor_ID, Doctor_Name
-- `Dim_Insurance` - Insurance_ID, Provider
-- `Dim_Ward` - Ward_ID, Ward_Name
-- `Dim_Payment` - Payment_ID, Payment_Mode
-
-> Why Star Schema? Fast performance, Simple DAX, Easy filtering for Power BI
-
----
-
-## 📊 DAX Measures - 17 Measures Created
-
-```dax
-Total Admissions = COUNTROWS(Fact_Admission) // 2K
-Total Billed = SUM(Fact_Admission[Bill_Amount_INR]) // 243.85M
-Total Collected = SUM(Fact_Admission[Amount_Paid]) // 196.78M
-Total Outstanding = [Total Billed] - [Total Collected] // 47.07M
-Collection Rate = DIVIDE([Total Collected], [Total Billed]) // 80.7%
-Avg Waiting Time = AVERAGE(Fact_Admission[wait_Time_Minutes]) // 121.85
-Avg Satisfaction = AVERAGE(Fact_Admission[Satisfaction_Scores]) // 3.55
-Avg Length of Stay = AVERAGE(Fact_Admission[Stay_Days]) // 9.50
-Avg Bill Per Admission = DIVIDE([Total Billed], [Total Admissions])
-
-Best Insurance Provider =
-  VAR Top1 = TOPN(1, ADDCOLUMNS(VALUES(Dim_Insurance[Provider]), "@Rate", [Collection Rate]), [@Rate], DESC)
-  RETURN MAXX(Top1, Dim_Insurance[Provider]) // ICICI Lombard
-
-Worst Insurance Provider =
-  VAR Bottom1 = TOPN(1, ADDCOLUMNS(VALUES(Dim_Insurance[Provider]), "@Rate", [Collection Rate]), [@Rate], ASC)
-  RETURN MAXX(Bottom1, Dim_Insurance[Provider]) // Medicare
-
-Top Diagnosis by Billing =
-  CALCULATE([Total Billed], TOPN(1, ALL(Dim_Diagnosis), [Total Billed], DESC)) // 21.89M
+**Author:** [Akthar Zamal Patan] | [https://www.linkedin.com/in/akthar-zamal-patan]
